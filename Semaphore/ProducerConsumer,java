@@ -1,0 +1,131 @@
+import java.util.Scanner;
+
+class ProducerConsumer {
+   
+   
+ 
+    static int in = 0, out = 0;
+ 
+
+    static BinarySemaphore S = new BinarySemaphore(1);
+   
+    static BinarySemaphore full = new BinarySemaphore(0);
+
+    static void produce(int buffer[],int BUFFER_SIZE,BinarySemaphore empty) {
+       if (empty.value==0) {
+            System.out.println("Buffer is full! Cannot produce.");
+            return;
+        }
+
+        empty.down(); //alternate process
+        S.down(); //concurrency
+
+        int item = (int) (Math.random() * 100);
+        buffer[in] = item;
+        System.out.println("Produced: " + item);
+        in = (in + 1) % BUFFER_SIZE;
+       
+
+        S.up();  
+        full.up();
+    }
+
+    static void consume(int buffer[],int BUFFER_SIZE,BinarySemaphore empty) {
+       if (full.value==0) {
+            System.out.println("Buffer is empty! Cannot consume.");
+            return;
+        }
+
+        full.down();  
+        S.down();  
+
+        int item = buffer[out];
+        buffer[out] = 0;
+        System.out.println("Consumed: " + item);
+        out = (out + 1) % BUFFER_SIZE;
+       
+
+        S.up();
+        empty.up();  
+    }
+
+    static void displayBuffer(int buffer[],int BUFFER_SIZE) {
+        S.down();
+        System.out.print("Buffer: [ ");
+        for (int i = 0; i < BUFFER_SIZE; i++) {
+            if (i == out && full.value==0) {
+                System.out.print("- ");
+            } else {
+                System.out.print((buffer[i] == 0 ? "- " : buffer[i] + " "));
+            }
+        }
+        System.out.println("]");
+        S.up();
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+       
+       
+        System.out.println("Enter Size of Buffer: ");
+         int n = sc.nextInt();
+        int[] buffer = new int[n];
+        BinarySemaphore empty = new BinarySemaphore(n);
+       
+       
+        int choice;
+
+        do {
+            System.out.println("\nChoose an option:");
+            System.out.println("1: Produce an item");
+            System.out.println("2: Consume an item");
+            System.out.println("3: Display buffer");
+            System.out.println("4: Exit");
+
+            choice = sc.nextInt();
+
+            switch (choice) {
+                case 1:
+                    produce(buffer,n,empty);
+                    break;
+                case 2:
+                    consume(buffer,n,empty);
+                    break;
+                case 3:
+                    displayBuffer(buffer,n);
+                    break;
+                case 4:
+                    System.out.println("Exiting");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        } while (choice != 4);
+
+        sc.close();
+    }
+}
+
+class BinarySemaphore {
+    int value;
+
+    BinarySemaphore(int initial) {
+        this.value = initial;
+    }
+
+    synchronized void down() {
+        while (value == 0) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                System.out.print(e);
+            }
+        }
+        value--;
+    }
+
+    synchronized void up() {
+        value++;
+        notify();
+    }
+}
