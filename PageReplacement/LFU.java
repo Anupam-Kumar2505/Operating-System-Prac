@@ -123,5 +123,6 @@ public class LFU {
     for (int i : pageFrequency.keySet()) {
       System.out.println("Page " + i + " Frequency: " + pageFrequency.get(i));
     }
+    sc.close();
   }
 }

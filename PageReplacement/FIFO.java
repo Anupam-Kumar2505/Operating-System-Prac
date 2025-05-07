@@ -74,5 +74,7 @@ public class FIFO {
 
     System.out.println("\nTotal Page Hits: " + hits);
     System.out.println("Total Page Faults: " + faults);
+
+    sc.close();
   }
 }
