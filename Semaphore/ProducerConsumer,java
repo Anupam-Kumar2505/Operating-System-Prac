@@ -7,11 +7,11 @@ class ProducerConsumer {
     static int in = 0, out = 0;
  
 
-    static BinarySemaphore S = new BinarySemaphore(1);
+    static Semaphore S = new Semaphore(1);
    
-    static BinarySemaphore full = new BinarySemaphore(0);
+    static Semaphore full = new Semaphore(0);
 
-    static void produce(int buffer[],int BUFFER_SIZE,BinarySemaphore empty) {
+    static void produce(int buffer[],int BUFFER_SIZE,Semaphore empty) {
        if (empty.value==0) {
             System.out.println("Buffer is full! Cannot produce.");
             return;
@@ -30,7 +30,7 @@ class ProducerConsumer {
         full.up();
     }
 
-    static void consume(int buffer[],int BUFFER_SIZE,BinarySemaphore empty) {
+    static void consume(int buffer[],int BUFFER_SIZE,Semaphore empty) {
        if (full.value==0) {
             System.out.println("Buffer is empty! Cannot consume.");
             return;
@@ -70,7 +70,7 @@ class ProducerConsumer {
         System.out.println("Enter Size of Buffer: ");
          int n = sc.nextInt();
         int[] buffer = new int[n];
-        BinarySemaphore empty = new BinarySemaphore(n);
+        Semaphore empty = new Semaphore(n);
        
        
         int choice;
@@ -106,10 +106,10 @@ class ProducerConsumer {
     }
 }
 
-class BinarySemaphore {
+class Semaphore {
     int value;
 
-    BinarySemaphore(int initial) {
+    Semaphore(int initial) {
         this.value = initial;
     }
 
